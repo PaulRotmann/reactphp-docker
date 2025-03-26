@@ -474,16 +474,24 @@ class FunctionalClientTest extends TestCase
         $promise = $this->client->containerRemove($container['Id']);
         $ret = \React\Async\await($promise);
 
-        // get all events between starting and removing for this container
+        // get all events between starting and removing for this network
         $promise = $this->client->events($start, $end, array('network' => array($network['Id'])));
         $ret = \React\Async\await($promise);
 
-        // expects "create", "disconnect", "destroy" events ("connect" will be skipped because we don't start the container)
-        $this->assertCount(3, $ret);
-        $this->assertEquals('create', $ret[0]['Action']);
-        $this->assertEquals('disconnect', $ret[1]['Action']);
-        $this->assertEquals('destroy', $ret[2]['Action']);
+        // Support for both Ubuntu 22.04 (3 events) and Ubuntu 24.04 (2 events)
+        if (count($ret) === 3) {
+            // On Ubuntu 22.04: expects "create", "disconnect", "destroy" events
+            $this->assertEquals('create', $ret[0]['Action']);
+            $this->assertEquals('disconnect', $ret[1]['Action']);
+            $this->assertEquals('destroy', $ret[2]['Action']);
+        } else {
+            // On Ubuntu 24.04: expects only "create" and "destroy" events
+            $this->assertCount(2, $ret);
+            $this->assertEquals('create', $ret[0]['Action']);
+            $this->assertEquals('destroy', $ret[1]['Action']);
+        }
     }
+
 
     /**
      * @depends testImageInspectCheckIfBusyboxExists
