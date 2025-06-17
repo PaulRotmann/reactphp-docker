@@ -19,7 +19,7 @@
         "react/promise-stream": "^1.6",
         "react/socket": "^1.16",
         "react/stream": "^1.4",
-        "rize/uri-template": "^0.3.8"
+        "rize/uri-template": "^0.3"
     },
     "require-dev": {
         "clue/caret-notation": "^0.2",
